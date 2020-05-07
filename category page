@@ -1,0 +1,67 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace AGRARIAN_SOCIETY_MANAGEMENT
+{
+    public partial class category : Form
+    {
+        public category()
+        {
+            InitializeComponent();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Agri_Business obj = new Agri_Business();
+            this.Hide();
+            obj.Show();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            appbody obj = new appbody();
+            this.Hide();
+            obj.Show();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            project obj = new project();
+            this.Hide();
+            obj.Show();
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            Agri_Universities obj = new Agri_Universities();
+            this.Hide();
+            obj.Show();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Agri_Clinic obj = new Agri_Clinic();
+            this.Hide();
+            obj.Show();
+        }
+
+        private void backupbutton_Click(object sender, EventArgs e)
+        {
+           transaction obj = new transaction();
+            this.Hide();
+            obj.Show();
+        }
+
+        private void category_Load(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
