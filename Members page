@@ -1,0 +1,251 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+
+namespace AGRARIAN_SOCIETY_MANAGEMENT
+{
+    public partial class appbody : Form
+    {
+        public appbody()
+        {
+            InitializeComponent();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            string s = nametextbox.Text;
+            foreach (char c in s)
+            {
+                if (char.IsDigit(c) && c != '_')
+                    MessageBox.Show("invalid input");
+            }
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            string s = categorytextbox.Text;
+            foreach (char c in s)
+            {
+                if (char.IsLetter(c) && c != '_')
+                    MessageBox.Show("invalid input");
+            }
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+            string s = locationtextbox.Text;
+            foreach (char c in s)
+            {
+                if (char.IsDigit(c) && c != '_')
+                    MessageBox.Show("invalid input");
+            }
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            string s = mem_idtextbox.Text;
+            foreach (char c in s)
+            {
+                if (char.IsLetter(c) && c != '_')
+                    MessageBox.Show("invalid input");
+            }
+        }
+
+        private void appbody_Load(object sender, EventArgs e)
+        {
+            refresh_datagridview();
+        }
+        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Database.mdf;Integrated Security=True");
+        private void addmemdata_Click(object sender, EventArgs e)
+        {
+            SqlCommand cmd = new SqlCommand("addmemdata", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@mem_id", mem_idtextbox.Text);
+            cmd.Parameters.AddWithValue("@name", nametextbox.Text);
+            cmd.Parameters.AddWithValue("@phone", categorytextbox.Text);
+            cmd.Parameters.AddWithValue("@location", locationtextbox.Text);
+            cmd.Parameters.AddWithValue("@proj_id", projidtextbox.Text);
+            con.Open();
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("  <<Invalid sql operation>>" + ex);
+            }
+            con.Close();
+            refresh_datagridview();
+
+        }
+        public void refresh_datagridview()
+        {
+            try
+            {
+
+                SqlCommand cmd = new SqlCommand("showmemdata", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter DA = new SqlDataAdapter(cmd);
+                DataSet DS = new DataSet();
+                DA.Fill(DS);
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("  << Invalid operation>>" + ex);
+                }
+                con.Close();
+                dataGridView1.DataSource = DS.Tables[0];
+                this.dataGridView1.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView1.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView1.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView1.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Invalid" + ex);
+            }
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+
+
+                SqlCommand cmd = new SqlCommand("deletememdata", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@mem_id", mem_idtextbox.Text);
+                
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("  <<Invalid sql operation>>" + ex);
+                }
+                con.Close();
+                refresh_datagridview();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("<<Invalid delete operation" + ex);
+            }
+
+        }
+
+        private void searchmem_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+
+                SqlCommand cmd = new SqlCommand("searchmem", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@mem_id", searchmemtextbox.Text);
+                SqlDataAdapter DA = new SqlDataAdapter(cmd);
+                DataSet DS = new DataSet();
+                DA.Fill(DS);
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("  << Invalid operation>>" + ex);
+                }
+                con.Close();
+                dataGridView1.DataSource = DS.Tables[0];
+                this.dataGridView1.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView1.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView1.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView1.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Invalid" + ex);
+            }
+        }
+
+        private void back_Click(object sender, EventArgs e)
+        {
+            category obj = new category();
+            this.Hide();
+            obj.Show();
+        }
+
+        private void clear_Click(object sender, EventArgs e)
+        {
+            mem_idtextbox.Text = "";
+            searchmemtextbox.Text = "";
+            nametextbox.Text = "";
+            categorytextbox.Text = "";
+            locationtextbox.Text = "";
+            projidtextbox.Text = "";
+        }
+
+        private void projidtextbox_TextChanged(object sender, EventArgs e)
+        {
+            string s = projidtextbox.Text;
+            foreach (char c in s)
+            {
+                if (char.IsLetter(c) && c != '_')
+                    MessageBox.Show("invalid input");
+            }
+        }
+
+        private void updatebutton2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+
+
+                SqlCommand cmd = new SqlCommand("updatemem", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@proj_id", projidtextbox.Text);
+                cmd.Parameters.AddWithValue("@mem_id", mem_idtextbox.Text);
+
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("  <<Invalid sql operation>>" + ex);
+                }
+                con.Close();
+                refresh_datagridview();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("<<Invalid delete operation" + ex);
+            }
+        }
+    }
+}
