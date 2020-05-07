@@ -1,0 +1,72 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace AGRARIAN_SOCIETY_MANAGEMENT
+{
+    public partial class transaction : Form
+    {
+        public transaction()
+        {
+            InitializeComponent();
+        }
+        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Database.mdf;Integrated Security=True");
+        private void transbutton_Click(object sender, EventArgs e)
+        {
+            refresh_datagridview();
+        }
+        public void refresh_datagridview()
+            {
+                try
+                {
+
+                    SqlCommand cmd = new SqlCommand("backupdata", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    SqlDataAdapter DA = new SqlDataAdapter(cmd);
+                    DataSet DS = new DataSet();
+                    DA.Fill(DS);
+                    con.Open();
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("  << Invalid operation>>" + ex);
+                    }
+                    con.Close();
+                    dataGridView14.DataSource = DS.Tables[0];
+                    this.dataGridView14.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                    this.dataGridView14.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                    this.dataGridView14.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                    this.dataGridView14.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Invalid" + ex);
+                }
+            
+            }
+
+        private void backbutton1_Click(object sender, EventArgs e)
+        {
+            category obj = new category();
+            this.Hide();
+            obj.Show();
+        }
+
+        private void transaction_Load(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
