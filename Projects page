@@ -1,0 +1,285 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace AGRARIAN_SOCIETY_MANAGEMENT
+{
+    public partial class project : Form
+    {
+        public project()
+        {
+            InitializeComponent();
+        }
+
+        private void projnametextbox_TextChanged(object sender, EventArgs e)
+        {
+            string s = projnametextbox.Text;
+            foreach (char c in s)
+            {
+                if (char.IsDigit(c) && c != '_')
+                    MessageBox.Show("invalid input");
+            }
+        }
+
+        private void proj_locationtextbox_TextChanged(object sender, EventArgs e)
+        {
+            string s = proj_locationtextbox.Text;
+            foreach (char c in s)
+            {
+                if (char.IsDigit(c) && c != '_')
+                    MessageBox.Show("invalid input");
+            }
+        }
+
+       
+
+        private void proj_manager_idtextbox_TextChanged(object sender, EventArgs e)
+        {
+            string s = proj_manager_idtextbox.Text;
+            foreach (char c in s)
+            {
+                if (char.IsLetter(c) && c != '_')
+                    MessageBox.Show("invalid input");
+            }
+        }
+
+        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Database.mdf;Integrated Security=True");
+
+        private void addprojdata_Click(object sender, EventArgs e)
+        {
+            SqlCommand cmd = new SqlCommand("addprojdata", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@proj_id", projidtextbox1.Text);
+            cmd.Parameters.AddWithValue("@proj_manager_id", proj_manager_idtextbox.Text);
+            cmd.Parameters.AddWithValue("@proj_name", projnametextbox.Text);
+            
+            cmd.Parameters.AddWithValue("@location", proj_locationtextbox.Text);
+            con.Open();
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("  <<Invalid sql operation>>" + ex);
+            }
+            con.Close();
+            refresh_datagridview();
+        }
+        public void refresh_datagridview()
+        {
+            try
+            {
+
+                SqlCommand cmd = new SqlCommand("showprojdata", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter DA = new SqlDataAdapter(cmd);
+                DataSet DS = new DataSet();
+                DA.Fill(DS);
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("  << Invalid operation>>" + ex);
+                }
+                con.Close();
+                dataGridView2.DataSource = DS.Tables[0];
+                this.dataGridView2.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView2.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView2.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView2.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Invalid" + ex);
+            }
+        }
+
+        private void project_Load(object sender, EventArgs e)
+        {
+            refresh_datagridview();
+        }
+
+        private void deleteprojdata_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+
+
+                SqlCommand cmd = new SqlCommand("deleteprojdata", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@proj_id", projidtextbox1.Text);
+
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("  <<Invalid sql operation>>" + ex);
+                }
+                con.Close();
+                refresh_datagridview();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("<<Invalid delete operation>>" + ex);
+            }
+        }
+
+        private void searchproj_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+
+                SqlCommand cmd = new SqlCommand("searchproj", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@proj_id", searchprojtextbox.Text);
+                SqlDataAdapter DA = new SqlDataAdapter(cmd);
+                DataSet DS = new DataSet();
+                DA.Fill(DS);
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("  << Invalid operation>>" + ex);
+                }
+                con.Close();
+                dataGridView2.DataSource = DS.Tables[0];
+                this.dataGridView2.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView2.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView2.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView2.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Invalid" + ex);
+            }
+        }
+
+        private void back_Click(object sender, EventArgs e)
+        {
+            category obj = new category();
+            this.Hide();
+            obj.Show();
+        }
+
+        private void clear_Click(object sender, EventArgs e)
+        {
+            proj_manager_idtextbox.Text = "";
+            projnametextbox.Text = "";
+            projidtextbox1.Text = "";
+            
+            proj_locationtextbox.Text = "";
+            searchprojtextbox.Text = "";
+        }
+
+        private void projidtextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+            string s = projidtextbox1.Text;
+            foreach (char c in s)
+            {
+                if (char.IsLetter(c) && c != '_')
+                    MessageBox.Show("invalid input");
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+                SqlCommand cmd = new SqlCommand("workon", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@proj_id", searchprojtextbox.Text);
+                SqlDataAdapter DA = new SqlDataAdapter(cmd);
+                DataSet DS = new DataSet();
+                DA.Fill(DS);
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("  << Invalid operation>>" + ex);
+                }
+                con.Close();
+                dataGridView10.DataSource = DS.Tables[0];
+                this.dataGridView10.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView10.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView10.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView10.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Invalid" + ex);
+            }
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView10_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+                SqlCommand cmd = new SqlCommand("no_of_members", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@proj_id", searchprojtextbox.Text);
+                SqlDataAdapter DA = new SqlDataAdapter(cmd);
+                DataSet DS = new DataSet();
+                DA.Fill(DS);
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("  << Invalid operation>>" + ex);
+                }
+                con.Close();
+                dataGridView20.DataSource = DS.Tables[0];
+                this.dataGridView20.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Invalid" + ex);
+            }
+        }
+    }
+}
