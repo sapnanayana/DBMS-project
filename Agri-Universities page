@@ -1,0 +1,216 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace AGRARIAN_SOCIETY_MANAGEMENT
+{
+    public partial class Agri_Universities : Form
+    {
+        public Agri_Universities()
+        {
+            InitializeComponent();
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void uninametextbox_TextChanged(object sender, EventArgs e)
+        {
+            string s = uninametextbox.Text;
+            foreach (char c in s)
+            {
+                if (char.IsDigit(c) && c != '_')
+                    MessageBox.Show("invalid input");
+            }
+        }
+
+        private void loctextbox_TextChanged(object sender, EventArgs e)
+        {
+            string s = loctextbox.Text;
+            foreach (char c in s)
+            {
+                if (char.IsDigit(c) && c != '_')
+                    MessageBox.Show("invalid input");
+            }
+        }
+
+        private void uniidtextbox_TextChanged(object sender, EventArgs e)
+        {
+            string s = uniidtextbox.Text;
+            foreach (char c in s)
+            {
+                if (char.IsLetter(c) && c != '_')
+                    MessageBox.Show("invalid input");
+            }
+        }
+
+        private void numtextbox_TextChanged(object sender, EventArgs e)
+        {
+            string s = numtextbox.Text;
+            foreach (char c in s)
+            {
+                if (char.IsLetter(c) && c != '_')
+                    MessageBox.Show("invalid input");
+            }
+        }
+
+
+        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\Database.mdf;Integrated Security=True");
+
+        private void addbusidata_Click(object sender, EventArgs e)
+        {
+            SqlCommand cmd = new SqlCommand("addunidata", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@mem_id", uniidtextbox.Text);
+            cmd.Parameters.AddWithValue("@uni_name", uninametextbox.Text);
+            cmd.Parameters.AddWithValue("@number", numtextbox.Text);
+            cmd.Parameters.AddWithValue("@location", loctextbox.Text);
+            con.Open();
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("  <<Invalid sql operation>>" + ex);
+            }
+            con.Close();
+            refresh_datagridview();
+        }
+        public void refresh_datagridview()
+        {
+            try
+            {
+
+                SqlCommand cmd = new SqlCommand("showunidata", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                SqlDataAdapter DA = new SqlDataAdapter(cmd);
+                DataSet DS = new DataSet();
+                DA.Fill(DS);
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("  << Invalid operation>>" + ex);
+                }
+                con.Close();
+                dataGridView4.DataSource = DS.Tables[0];
+                this.dataGridView4.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView4.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView4.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView4.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Invalid" + ex);
+            }
+        }
+
+        private void Agri_Universities_Load(object sender, EventArgs e)
+        {
+            refresh_datagridview();
+        }
+
+        private void deletebusidata_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+
+
+                SqlCommand cmd = new SqlCommand("deleteunidata", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@uni_name", uninametextbox.Text);
+
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("  <<Invalid sql operation>>" + ex);
+                }
+                con.Close();
+                refresh_datagridview();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("<<Invalid delete operation>>" + ex);
+            }
+        }
+
+        private void searchmember_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+                SqlCommand cmd = new SqlCommand("searchuni", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@mem_id", searchunitextbox.Text);
+                SqlDataAdapter DA = new SqlDataAdapter(cmd);
+                DataSet DS = new DataSet();
+                DA.Fill(DS);
+                con.Open();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("  << Invalid operation>>" + ex);
+                }
+                con.Close();
+                dataGridView4.DataSource = DS.Tables[0];
+                this.dataGridView4.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView4.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView4.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                this.dataGridView4.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Invalid" + ex);
+            }
+        }
+
+        private void back_Click(object sender, EventArgs e)
+        {
+            category obj = new category();
+            this.Hide();
+            obj.Show();
+        }
+
+        private void clear_Click(object sender, EventArgs e)
+        {
+            uniidtextbox.Text = "";
+
+            uninametextbox.Text = "";
+            numtextbox.Text = "";
+            searchunitextbox.Text = "";
+            loctextbox.Text = "";
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
+
+
+}
